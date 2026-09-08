@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "name": "STM32",
+            "compileCommands": "${workspaceFolder}/build/Debug/compile_commands.json",
+            "intelliSenseMode": "windows-gcc-arm",
+            "includePath": [
+                "C:\\Users\\ADMIN\\gnuarmemb\\arm-none-eabi\\include"
+            ],
+            "compilerPath": "C:/Users/ADMIN/gnuarmemb/bin/arm-none-eabi-gcc.exe"
+        }
+    ],
+    "version": 4
+}
