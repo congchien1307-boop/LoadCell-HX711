@@ -1,6 +1,5 @@
 #include "STM32_reg.h"
-#define HX711_DT_PIN 0
-#define HX711_DP_SCK_PIN 1
+#include "GPIO.h"
 // set up HX711 pins 
 void HX711_Init(void)
 {
@@ -22,7 +21,7 @@ void HX711_SCK_HIGH(void)
 { 
     GPIOA->BSRR |= (1 << (HX711_DP_SCK_PIN + 16)); // Set GPIOA pin 1 HIGH
 }
-void HX711_DT_Read(void)
+int8_t HX711_DT_Read(void)
 {
 return (GPIOA->IDR & (1 << HX711_DT_PIN)) ? 1 : 0; // Read GPIOA pin 0, DT_pin
 }
