@@ -34,6 +34,7 @@ typedef struct RCC
     volatile uint32_t CIR;      // RCC clock interrupt
     volatile uint32_t AHB1RSTR; // RCC AHB1 peripheral reset register
     volatile uint32_t AHB1ENR;  // RCC AHB1 peripheral clock enable register
+    volatile uint32_t APB2ENR;  // RCC APB2 peripheral clock enable register
 } RCC_typedef;
 typedef struct {
     volatile uint32_t CTRL;
@@ -44,4 +45,5 @@ typedef struct {
 #define GPIOA ((GPIO_typedef *) GPIOA_BASE)
 #define RCC ((RCC_typedef *) RCC_BASE)
 #define RCC_AHB1ENR_GPIOAEN   (1 << 0)
+#define RCC_APB2ENR_UART1EN   (1 << 4)
 #endif
