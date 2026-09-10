@@ -2,12 +2,15 @@
 #include "STM32_reg.h"
 #include "GPIO.h"
 #include "SysTick.h"
+#include "Flash.h"
 #define GAIN_128 25
 #define GAIN_64 27
 #define GAIN_32 26
+#define CALIB_OFFSET_ADD  (FLASH_SECTOR_ADDRESS + 0)
+#define CALIB_SCALE_ADD   (FLASH_SECTOR_ADDRESS + 4)
 // check if HX711 is ready for data retrieval
 int8_t HX711_check(void){
-    return (HX711_DT_Read()==0);
+    return (GPIOA_HX711_DT_Read()==0);
 }
 // read 24-bit data from HX711
 int32_t HX711_read_data(uint8_t gain)
@@ -15,16 +18,16 @@ int32_t HX711_read_data(uint8_t gain)
     int32_t data = 0;
     while (!HX711_check());
     for (int i = 0; i < 24; i++){
-        HX711_SCK_HIGH();
+        GPIOA_HX711_SCK_HIGH();
         Delay_us(1);
-        data = (data << 1) | HX711_DT_Read();
-        HX711_SCK_LOW();
+        data = (data << 1) | GPIOA_HX711_DT_Read();
+        GPIOA_HX711_SCK_LOW();
         Delay_us(1);
     }
     for (int i = 0; i < gain; i++){
-        HX711_SCK_HIGH();
+        GPIOA_HX711_SCK_HIGH();
         Delay_us(1);
-        HX711_SCK_LOW();
+        GPIOA_HX711_SCK_LOW();
         Delay_us(1);
     }
     if (data & 0x800000){        // if the sign bit is set, extend the sign to 32 bits
@@ -62,3 +65,17 @@ float HX711_get_weight(HX711_Cal_t *cal, uint16_t samples){
     uint32_t avg = (uint32_t)(sum / samples);
     return (float)(avg - cal->offset) / cal->scale;
 }
+// save calibration data to flash memory
+void HX711_savetoflash(HX711_Cal_t *cal){
+    Flash_EraseSector(FLASH_SECTOR);
+    Flash_ProgramWord(CALIB_OFFSET_ADD, (uint32_t)cal->offset);
+    Flash_ProgramWord(CALIB_SCALE_ADD, *(uint32_t *)&cal->scale);
+}
+// load calibration data from flash memory
+void HX711_Loadfromflash(HX711_Cal_t *cal){
+    cal->offset = (int32_t)Flash_read(CALIB_OFFSET_ADD);
+    uint32_t scale_data = (uint32_t)Flash_read(CALIB_SCALE_ADD);
+    cal->scale = *(float *)&scale_data;
+}
+
+    
